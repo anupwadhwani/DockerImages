@@ -1,0 +1,14 @@
+version: '3.8'  # Docker Compose file format version
+
+services:
+  mysql:
+    image: mysql:latest  # Always pull the latest tag
+    container_name: mysql_container
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    pull_policy: always  # Optional, only supported in Compose v2+

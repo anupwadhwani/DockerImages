@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  streamlit:
+    build: .                     # Build using Dockerfile in current folder
+    container_name: streamlit_uploadfile-showcontent
+    ports:
+      - "8502:8502"
