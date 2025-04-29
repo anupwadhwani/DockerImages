@@ -1,0 +1,4 @@
+chromadb
+ollama
+fastapi
+mysql-connector-python
