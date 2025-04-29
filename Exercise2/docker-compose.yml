@@ -18,6 +18,8 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
+      OLLAMA_URL: ${OLLAMA_URL}
+      OLLAMA_MODEL: ${OLLAMA_MODEL}
     ports:
       - "8000:8000"
     volumes:
@@ -50,12 +52,15 @@ services:
       - IS_PERSISTENT=TRUE
 
   ollama:
-    image: ollama/ollama:latest
+    build:
+      context: ./ollama
+    container_name: ollama_server
     ports:
       - "11434:11434"
+    environment:
+      - OLLAMA_MODELS=${OLLAMA_MODEL_INSTALL}
     volumes:
       - ollama_data:/root/.ollama
-    command: serve
 
 volumes:
   mysql_data:

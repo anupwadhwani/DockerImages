@@ -2,6 +2,7 @@ import chromadb
 from chromadb.utils import embedding_functions
 from typing import Optional
 
+#TODO: env var
 client = chromadb.HttpClient(host='chromadb', port=8001)  # Not Local API
 collection = client.get_or_create_collection(name="documents")
 

@@ -13,6 +13,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 question = st.text_input("Ask away, but no refunds on bad answers!")
 
+#TODO: env var
 if st.button("Summon the Query"):
     res = requests.post("http://localhost:8000/query", json={"question": question})
     st.code(res.json()["query"])

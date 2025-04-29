@@ -1,8 +1,4 @@
 FROM mysql:8.0
 
-# Set environment variables
-ENV MYSQL_ROOT_PASSWORD=root
-ENV MYSQL_DATABASE=sampledb
-
 # Copy init SQL script to container's special init directory
 COPY init.sql /docker-entrypoint-initdb.d/

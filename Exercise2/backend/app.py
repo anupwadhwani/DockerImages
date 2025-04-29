@@ -8,6 +8,9 @@ import uvicorn
 import os
 
 
+OLLAMA_URL = os.getenv('OLLAMA_URL', 'http://localhost:11434')
+OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'mistral-small:latest')
+
 conn = get_connection()
 
 load_schema_and_samples(conn)
@@ -29,18 +32,14 @@ Context:\n{context}
 Question:\n{q.question}
 Write only the MySQL query no need to add any extra word or quote before and after query:
 """
-    ollama_client = ollama.Client(host='http://localhost:11434')  # if accessing from host
-    # response = ollama.chat(model='llama3', messages=[{"role": "user", "content": prompt}])
-    response = ollama_client.chat(model='mistral-small:latest', messages=[{"role": "user", "content": prompt}])
-    #return response
+    ollama_client = ollama.Client(host=OLLAMA_URL)
+    response = ollama_client.chat(model=OLLAMA_MODEL, messages=[{"role": "user", "content": prompt}])
     sql_query = response['message']['content'].strip()
     trimmed_sql_query = sql_query.replace('\n', ' ')
-    print(trimmed_sql_query)
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(trimmed_sql_query)
     result = cursor.fetchall()
-    print(result)
     unique_rows = list(set(row for row in result))
     return {"query": trimmed_sql_query, "result": unique_rows}
 
@@ -50,6 +49,6 @@ def fetch(doc_id: Optional[str] = Query(None, description="Document ID to fetch"
     return fetch_chroma_data(doc_id)
 
 
-
+#TODO: UPDATE HOST 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("API_PORT", 8000)))
