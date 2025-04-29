@@ -1,16 +1,13 @@
 # ollama/Dockerfile
 FROM ollama/ollama:latest
 
+RUN apt-get update && apt-get install -y curl
+
 # Expose Ollama API port
 EXPOSE 11434
 
-# Pull models if OLLAMA_MODELS is provided during container startup
-CMD ["/bin/bash", "-c", "\
-    if [ ! -z \"$OLLAMA_MODELS\" ]; then \
-      for model in $OLLAMA_MODELS; do \
-        echo Pulling model: $model; \
-        ollama pull $model || echo Failed to pull $model; \
-      done; \
-    fi; \
-    exec ollama serve \
-"]
+# Entrypoint script
+COPY init.sh /init.sh
+RUN chmod +x /init.sh
+
+ENTRYPOINT ["/init.sh"]

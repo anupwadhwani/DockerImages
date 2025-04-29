@@ -1,14 +1,36 @@
 version: '3.8'
 
 services:
-  frontend:
+  mysql:
     build:
-      context: ./frontend
+      context: ./mysql
+    container_name: mysql_db
     ports:
-      - "8501:8501"
-    depends_on:
-      - backend
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - mysql_data:/var/lib/mysql
 
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: chroma_db_container
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+
+  ollama:
+    build:
+      context: ./ollama
+    container_name: ollama_server
+    ports:
+      - "11434:11434"
+    environment:
+      - OLLAMA_MODEL_INSTALL=${OLLAMA_MODEL_INSTALL}
+    volumes:
+      - ollama_data:/root/.ollama
+      
   backend:
     build:
       context: ./backend
@@ -29,38 +51,14 @@ services:
       - ollama
       - mysql
 
-  mysql:
+  frontend:
     build:
-      context: ./mysql
-    container_name: mysql_db
+      context: ./frontend
     ports:
-      - "${MYSQL_PORT}:${MYSQL_PORT}"
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-    volumes:
-      - mysql_data:/var/lib/mysql
+      - "8501:8501"
+    depends_on:
+      - backend
 
-  chromadb:
-    build:
-      context: ./chromadb
-    ports:
-      - "8001:8000"
-    volumes:
-      - chroma_data:/data
-    environment:
-      - IS_PERSISTENT=TRUE
-
-  ollama:
-    build:
-      context: ./ollama
-    container_name: ollama_server
-    ports:
-      - "11434:11434"
-    environment:
-      - OLLAMA_MODELS=${OLLAMA_MODEL_INSTALL}
-    volumes:
-      - ollama_data:/root/.ollama
 
 volumes:
   mysql_data:
