@@ -75,6 +75,7 @@ if st.session_state["query"]:
                 res.raise_for_status()
                 st.success("Thank you! Feedback saved.")
                 st.session_state["approved"] = True
+                st.experimental_rerun()
                 logging.info("Feedback successfully sent.")
             except Exception as e:
                 logging.error(f"Failed to send feedback: {e}")

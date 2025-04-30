@@ -35,7 +35,8 @@ Never delete or modify data. Only generate SELECT queries.
 
 Context:\n{context}
 Question:\n{q.question}
-Write only the MySQL query no need to add any extra word or quote before and after query:
+Write only the MySQL query no need to add any extra word or quote before and after query
+If user's question is not related to datbase provided answer with "You must be kidding asking me this questions.":
 """
     ollama_client = ollama.Client(host=OLLAMA_URL)
     response = ollama_client.chat(model=OLLAMA_MODEL, messages=[{"role": "user", "content": prompt}])
