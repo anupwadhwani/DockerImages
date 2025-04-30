@@ -13,11 +13,7 @@ done
 
 echo "Ollama server is up! Starting to pull models..."
 
-# Pull models
-for model in $OLLAMA_PULL_MODELS; do
-  echo "Pulling model: $model"
-  curl -X POST http://localhost:11434/api/pull -d "{\"name\":\"$model\"}" || echo "Failed to pull $model"
-done
+ollama run mistral
 
 echo "✅ Done pulling all models."
 

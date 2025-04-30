@@ -2,6 +2,11 @@ import chromadb
 from chromadb.utils import embedding_functions
 from typing import Optional
 import os
+import uuid
+import json
+from pathlib import Path
+
+FEEDBACK_FILE = Path("feedback_store.json")
 
 chromaHost = os.getenv('CHROMA_HOST', 'chromadb')
 chromaPort = int(os.getenv("CHROMA_PORT", 8000))
@@ -108,3 +113,29 @@ def load_schema_and_samples(conn, max_rows_per_table=3):
         schema_texts.append(full_text)
 
     embed_and_store(schema_texts)
+
+
+def embed_and_store_feedback(text):
+    # Store in ChromaDB
+    doc_id = str(uuid.uuid4())
+    collection = client.get_or_create_collection(name="documents")
+    collection.add(documents=[text], ids=[doc_id])
+
+    # Also store in local file
+    with FEEDBACK_FILE.open("a", encoding="utf-8") as f:
+        json.dump({"id": doc_id, "text": text}, f)
+        f.write("\n")
+        
+def load_feedback_into_rag():
+    if not FEEDBACK_FILE.exists():
+        return
+
+    with FEEDBACK_FILE.open("r", encoding="utf-8") as f:
+        docs = [json.loads(line.strip()) for line in f if line.strip()]
+
+    if docs:
+        collection = client.get_or_create_collection(name="documents")
+        collection.add(
+            documents=[doc["text"] for doc in docs],
+            ids=[doc["id"] for doc in docs]
+        )
