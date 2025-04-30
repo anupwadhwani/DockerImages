@@ -1,13 +1,55 @@
 import chromadb
 from chromadb.utils import embedding_functions
 from typing import Optional
+import os
 
-#TODO: env var
-client = chromadb.HttpClient(host='chromadb', port=8001)  # Not Local API
+chromaHost = os.getenv('CHROMA_HOST', 'chromadb')
+chromaPort = int(os.getenv("CHROMA_PORT", 8000))
+client = chromadb.HttpClient(host=chromaHost, port=chromaPort) 
 collection = client.get_or_create_collection(name="documents")
 
 column_metadata = {
+    "users": {
+      "id": "Unique ID for each user (Primary key, Auto-incremented)",
+      "username": "The user's display name (Regular column)",
+      "email": "The user's email address (Regular column)",
+      "password": "The user's encrypted password (Regular column)",
+      "created_at": "Timestamp when the user was created (Default value is NOW())"
+    },
+    "products": {
+      "id": "Unique ID for each product (Primary key, Auto-incremented)",
+      "name": "Name of the product (Regular column)",
+      "description": "Detailed information about the product (Regular column)",
+      "price": "Selling price of the product (Regular column)",
+      "stock": "Number of items available (Regular column)"
+    },
+    "orders": {
+      "id": "Unique ID for each order (Primary key, Auto-incremented)",
+      "user_id": "ID of the user who placed the order (Foreign key referencing users(id))",
+      "order_date": "Date the order was placed (Regular column)",
+      "total": "Total price of the order (Regular column)",
+      "status": "Current status of the order (Regular column)"
+    },
+    "order_items": {
+      "id": "Unique ID for each order item (Primary key, Auto-incremented)",
+      "order_id": "ID of the related order (Foreign key referencing orders(id))",
+      "product_id": "ID of the product in the order (Foreign key referencing products(id))",
+      "quantity": "Number of units ordered (Regular column)",
+      "price": "Price of the product at the time of order (Regular column)"
+    },
+    "categories": {
+      "id": "Unique ID for each category (Primary key, Auto-incremented)",
+      "name": "Name of the category (Regular column)",
+      "description": "Details about the category (Regular column)"
+    },
+    "product_categories": {
+      "id": "Unique ID for each mapping between product and category (Primary key, Auto-incremented)",
+      "product_id": "ID of the product (Foreign key referencing products(id))",
+      "category_id": "ID of the category (Foreign key referencing categories(id))"
+    }
 }
+
+
 
 def embed_and_store(texts):
     collection.add(documents=texts, ids=[str(i) for i in range(len(texts))])

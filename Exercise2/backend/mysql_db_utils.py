@@ -2,7 +2,7 @@ import mysql.connector
 import os
 
 DB_CONFIG = {
-    'host': os.getenv("MYSQL_HOST", "host.docker.internal"),
+    'host': os.getenv("MYSQL_HOST", "mysql"),
     'port': int(os.getenv("MYSQL_PORT", 3306)),
     'user': os.getenv("MYSQL_USER", "root"),
     'password': os.getenv("MYSQL_PASSWORD", "root"),

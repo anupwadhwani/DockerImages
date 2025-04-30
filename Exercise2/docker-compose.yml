@@ -5,6 +5,7 @@ services:
     build:
       context: ./mysql
     container_name: mysql_db
+    hostname: mysql
     ports:
       - "${MYSQL_PORT}:${MYSQL_PORT}"
     environment:
@@ -17,7 +18,7 @@ services:
     image: chromadb/chroma:latest
     container_name: chroma_db_container
     ports:
-      - "8001:8000"
+      - "8000:8000"
     restart: unless-stopped
 
   ollama:
@@ -35,6 +36,7 @@ services:
     build:
       context: ./backend
     environment:
+      API_PORT: ${API_PORT}
       MYSQL_HOST: ${MYSQL_HOST}
       MYSQL_PORT: ${MYSQL_PORT}
       MYSQL_USER: ${MYSQL_USER}
@@ -42,8 +44,10 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       OLLAMA_URL: ${OLLAMA_URL}
       OLLAMA_MODEL: ${OLLAMA_MODEL}
+      CHROMA_HOST: ${CHROMA_HOST}
+      CHROMA_PORT: ${CHROMA_PORT}
     ports:
-      - "8000:8000"
+      - "4000:4000"
     volumes:
       - ./db:/app/db
     depends_on:

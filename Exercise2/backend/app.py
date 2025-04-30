@@ -51,4 +51,4 @@ def fetch(doc_id: Optional[str] = Query(None, description="Document ID to fetch"
 
 #TODO: UPDATE HOST 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("API_PORT", 8000)))
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("API_PORT", 4000)))
