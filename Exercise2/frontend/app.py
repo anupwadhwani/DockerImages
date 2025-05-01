@@ -54,18 +54,23 @@ if st.button("Summon the Query"):
     try:
         res = requests.post(f"http://{apiHost}:{apiPort}/query", json={"question": question})
         res.raise_for_status()
-        st.session_state["query"] = res.json()["query"]
-        st.session_state["approved"] = False  # reset approval if new query
-        logging.info(f"Query received and stored: {st.session_state['query']}")
+        error = "I'm a text-to-SQL model, not your Tinder wingman. If you want a query, I got you. If you're lonely, call your ex or your DBA."
+        if res.json()["query"].strip().lower() == error.lower():
+            st.session_state["query"] = None
+            st.session_state["approved"] = False
+            st.error(error)
+        else:
+            st.session_state["query"] = res.json()["query"]
+            st.session_state["approved"] = False  # reset approval if new query
+            logging.info(f"Query received and stored: {st.session_state['query']}")
     except Exception as e:
         logging.error(f"Failed to fetch query: {e}")
-        st.error("Failed to generate SQL query.")
-
+        
 # Always show the query if available
 if st.session_state["query"]:
     st.code(st.session_state["query"])
     if st.session_state["approved"] == False:
-        if st.button("👍 Approve this SQL"):
+        if st.button("Approve this SQL"):
             logging.info("Approve button clicked.")
             try:
                 res = requests.post(f"http://{apiHost}:{apiPort}/feedback", json={
@@ -75,7 +80,7 @@ if st.session_state["query"]:
                 res.raise_for_status()
                 st.success("Thank you! Feedback saved.")
                 st.session_state["approved"] = True
-                st.experimental_rerun()
+                st.rerun()  
                 logging.info("Feedback successfully sent.")
             except Exception as e:
                 logging.error(f"Failed to send feedback: {e}")
@@ -83,8 +88,8 @@ if st.session_state["query"]:
 
     try:
         df = get_table_data(st.session_state["query"])
-        st.dataframe(df)
+        st.dataframe(df, hide_index=True)
         logging.info("Table data successfully loaded and displayed.")
     except Exception as e:
         logging.error(f"Failed to load table data: {e}")
-        st.error("Failed to load table data.")  
+         

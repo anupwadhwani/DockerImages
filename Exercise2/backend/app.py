@@ -36,20 +36,15 @@ Never delete or modify data. Only generate SELECT queries.
 Context:\n{context}
 Question:\n{q.question}
 Write only the MySQL query no need to add any extra word or quote before and after query
-If user's question is not related to datbase provided answer with "You must be kidding asking me this questions.":
+If user's question is not related to datbase provided answer with "I'm a text-to-SQL model, not your Tinder wingman. If you want a query, I got you. If you're lonely, call your ex or your DBA.":
 """
     ollama_client = ollama.Client(host=OLLAMA_URL)
     response = ollama_client.chat(model=OLLAMA_MODEL, messages=[{"role": "user", "content": prompt}])
     sql_query = response['message']['content'].strip()
+    print(f"response from ollama : {sql_query}")
     trimmed_sql_query = sql_query.replace('\n', ' ')
     print(sql_query)
-    conn = get_connection()
-    cursor = conn.cursor()
-    print(trimmed_sql_query)
-    cursor.execute(trimmed_sql_query)
-    result = cursor.fetchall()
-    unique_rows = list(set(row for row in result))
-    return {"query": trimmed_sql_query, "result": unique_rows}
+    return {"query": trimmed_sql_query}
 
 
 @app.get("/fetch")

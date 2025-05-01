@@ -5,8 +5,6 @@ services:
     container_name: ollama_server
     ports:
       - "11434:11434"
-    environment:
-      - OLLAMA_MODEL_INSTALL=${OLLAMA_MODEL_INSTALL}
     volumes:
       - ollama_data:/root/.ollama
 

@@ -13,7 +13,8 @@ done
 
 echo "Ollama server is up! Starting to pull models..."
 
-ollama run mistral
+#ollama run mistral 
+ollama run mistral-small
 
 echo "✅ Done pulling all models."
 
